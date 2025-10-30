@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CHIC Industry</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandGray: '#444040',
+            brandLight: '#E8E8E8',
+          },
+          fontFamily: {
+            coolcrammed: ['CoolveticaCrammed', 'CoolveticaHeavy', 'sans-serif'],
+            coolheavy: ['CoolveticaHeavy', 'sans-serif'],
+            evolventa: ['Evolventa', 'sans-serif'],
+            archivo: ['"Archivo Narrow"', 'sans-serif'],
+          },
+        },
+      },
+      corePlugins: { preflight: true },
+    }
+  </script>
+
+  <!-- Local fonts + helpers to keep your JS working -->
+  <style>
+    /* Coolvetica family (keep original look and paths) */
+    @font-face{font-family: "CoolveticaCrammed"; src: url("./fonts/Coolvetica/CoolveticaCrammed/CoolveticaCrammed.eot"); src: url("./fonts/Coolvetica/CoolveticaCrammed/CoolveticaCrammed.eot?#iefix") format("embedded-opentype"), url("./fonts/Coolvetica/CoolveticaCrammed/CoolveticaCrammed.woff") format("woff"), url("./fonts/Coolvetica/CoolveticaCrammed/CoolveticaCrammed.ttf") format("truetype"), url("./fonts/Coolvetica/155-font.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap;}
+    @font-face{font-family: "CoolveticaHeavy"; src: url("./fonts/Coolvetica/CoolveticaHeavy/CoolveticaHeavy.eot"); src: url("./fonts/Coolvetica/CoolveticaHeavy/CoolveticaHeavy.eot?#iefix") format("embedded-opentype"), url("./fonts/Coolvetica/CoolveticaHeavy/CoolveticaHeavy.woff") format("woff"), url("./fonts/Coolvetica/CoolveticaHeavy/CoolveticaHeavy.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap;}
+
+    /* Evolventa */
+    @font-face{font-family: 'Evolventa'; src: url('./fonts/evolventa-master/woff/Evolventa-Regular.woff') format('woff'); font-weight: 400; font-style: normal; font-display: swap;}
+    @font-face{font-family: 'Evolventa'; src: url('./fonts/evolventa-master/woff/Evolventa-Bold.woff') format('woff'); font-weight: 700; font-style: normal; font-display: swap;}
+
+    /* Archivo Narrow */
+    @font-face{font-family: "Archivo Narrow"; src: url('./fonts/Archivo/ArchivoNarrow-VariableFont_wght.ttf'); font-style: normal; font-display: swap;}
+
+    /* Default body font to avoid Bootstrap overrides */
+    body{ font-family: 'Evolventa', system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }
+
+    /* JS compatibility helpers */
+    .modal{display:none}
+    .modal.is-open{display:block}
+
+    .price-table-wrap{max-height:623px; overflow:hidden; transition:max-height .5s ease}
+    .price-section.expanded .price-table-wrap{max-height:1200px}
+
+    /* Tabs behaviour (override Tailwind opacity-0 on active) */
+    .tab-content{max-height:0; overflow:hidden; opacity:0; padding-top:0; padding-bottom:0; transition:max-height .5s ease, opacity .5s ease, padding .5s ease}
+    .tab-content.active{opacity:1; padding-bottom:35px}
+    .tab-item.active .arrow img{content:url('./JPGPNG/arrow_down.svg')}
+  </style>
+</head>
+
+<body class="bg-white text-[#444040] selection:bg-black/10 selection:text-black">
+
+  <!-- MODAL -->
+  <div class="modal" id="contactModal" aria-hidden="true">
+    <div class="modal__backdrop fixed inset-0 bg-white/80"></div>
+
+    <div class="fixed left-1/2 top-1/2 w-[958px] h-[721px] -translate-x-1/2 -translate-y-1/2 bg-black shadow-2xl overflow-hidden"
+         role="dialog" aria-modal="true" aria-labelledby="modalTitle"
+         style="background:url('./JPGPNG/modal_window_img.png') center/cover no-repeat">
+
+      <button class="modal__close absolute top-[30px] right-[30px] w-8 h-8 cursor-pointer" type="button" aria-label="Закрити">
+        <img src="./JPGPNG/123.svg" alt="">
+      </button>
+
+
+      <div class="modal__mask absolute inset-y-0 left-0 w-[554px] bg-black/70 z-[1]">
+        <span aria-hidden="true" class="modal__dash absolute top-0 bottom-0 right-[10px] w-px"
+          style="background:repeating-linear-gradient(to bottom,#D7D7D7 0 9px,transparent 9px 16px)"></span>
+      </div>
+
+      <form class="modal__form absolute left-0 top-0 h-full w-[554px] z-[2] flex flex-col gap-[55px] pl-[50px] pt-[88px] pb-[87px]" id="contactForm">
+        <div>
+          <label id="modalTitle" class="modal__label">ВАШЕ ІМ’Я</label>
+          <input class="modal__input" type="text" name="name" placeholder="Введіть Ваше повне ім’я" required>
+        </div>
+
+        <div>
+          <label class="modal__label">ТЕЛЕФОН / E-MAIL</label>
+          <input class="modal__input" type="text" name="email" placeholder="Введіть Ваш номер телефона або e-mail" required>
+        </div>
+
+        <div>
+          <label class="modal__label">ПОВІДОМЛЕННЯ</label>
+          <textarea class="modal__input modal__input--area" name="message" placeholder="Введіть Ваше питання або пропозицію..." required></textarea>
+        </div>
+
+        <!-- honeypot -->
+        <input type="text" name="company" style="display:none">
+
+        <button type="submit" class="modal__btn">НАДІСЛАТИ</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PAGE WRAPPER -->
+  <div class="wrapper relative max-w-[1920px] mx-auto">
+
+    <!-- HEADER -->
+    <header class="header fixed z-[1000] flex items-center h-[130px] mt-8 px-[98px] w-full">
+      <div class="logo mt-3 mb-[21px]">
+        <img class="h-[100px]" src="./JPGPNG/logochic.svg" alt="CHIC_Clothing_Industry" />
+      </div>
+
+      <nav class="nav ml-auto mr-auto pl-[477.5px] pr-[403px] flex items-center gap-[57px] font-evolventa font-bold uppercase tracking-[.095em]">
+        <a href="#" class="text-brandLight hover:text-black transition">Хто ми</a>
+        <a href="#" class="text-brandLight hover:text-black transition">Послуги</a>
+        <a href="#" class="text-brandLight hover:text-black transition">Умови</a>
+        <a href="#" class="text-brandLight hover:text-black transition">Ціни</a>
+        <a href="#" class="text-brandLight hover:text-black transition">Контакти</a>
+      </nav>
+
+      <div class="lang-switch ml-auto cursor-pointer">
+        <img class="transition-transform hover:scale-110" src="./JPGPNG/ua_lang.png" alt="ua_lang" />
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <main class="main relative h-[1117px] max-w-[1920px] bg-center bg-cover text-white" style="background-image:url('./JPGPNG/227407_LE_upscale_balanced_x4_1.png'); filter:brightness(1.3)">
+      <!-- side overlays -->
+      <div class="absolute top-0 left-[665px] right-0 h-[175px] bg-black/40 z-[1] pointer-events-none"></div>
+      <div class="absolute top-[175px] right-0 bottom-0 w-[123px] bg-black/40 z-[5] pointer-events-none"></div>
+      <div class="absolute inset-y-0 left-0 max-w-[665px] w-full bg-black/40 z-[6] pointer-events-none"></div>
+      <div class="absolute inset-y-0 left-0 max-w-[665px] w-full z-[5] pointer-events-none"
+           style="background:repeating-linear-gradient(to bottom,#D7D7D7 0 9px,transparent 9px 16px); background-repeat:repeat-y; background-position:right center; background-size:1px 16px"></div>
+
+      <!-- bottom dashed bar -->
+      <section class="absolute left-0 right-0 bottom-0 h-[355px] z-[1] flex justify-between items-end pl-[110px] pr-[40px] pb-[40px]"
+               style="background:repeating-linear-gradient(to right,#D7D7D7 0 9px,transparent 9px 16px); background-repeat:repeat-x; background-position:left top; background-size:16px 1px">
+        <div class="absolute bottom-[60px] left-[50px] right-[50px] flex justify-between items-end z-[2]">
+          <div class="text-white max-w-[586px] ml-[65px] mb-[70px]">
+            <h2 class="font-coolcrammed text-[110px] leading-[.9] tracking-[.04em] uppercase">
+              <span class="whitespace-nowrap">Ваша ідея&nbsp;—</span><br/>
+              <span>наше швейне мистецтво</span>
+            </h2>
+          </div>
+          <div class="mr-[70px] main-button">
+            <img src="./JPGPNG/Call_button.svg" alt="Замовити дзвінок" class="max-w-[227px] h-auto cursor-pointer transition-transform hover:scale-110"/>
+          </div>
+        </div>
+      </section>
+
+      <div class="absolute left-[665px] right-[123px] bottom-0 h-[355px] bg-black/40 z-[5] pointer-events-none"></div>
+
+      <!-- gradient mask like ::before -->
+      <div class="absolute inset-0 pointer-events-none z-0" style="background:linear-gradient(to right, rgba(0,0,0,.6) 0%, rgba(0,0,0,.05) 30%, rgba(0,0,0,.05) 70%, rgba(0,0,0,.6) 100%)"></div>
+    </main>
+
+    <!-- UNDERMAIN (white bg) -->
+    <section class="undermain relative z-[2] max-w-[1920px] pt-[130px] bg-white">
+      <div class="flex items-start justify-start gap-[178px] max-w-[1700px] mx-auto py-[60px] px-[108px] undermaininfo">
+        <div class="underimg w-[818px] h-[818px] bg-cover bg-center bg-no-repeat transition-[background-image] duration-500 shrink-0"></div>
+            <div class="undertext max-w-[705px] text-brandGray font-evolventa text-[18px] leading-[1.395] tracking-[.063em]">
+          <h3 class="font-bold mb-2.5">Хто ми ?</h3>
+          <p class="mb-4">Ми — сучасне швейне виробництво повного циклу, яке допомагає брендам втілювати ідеї в реальність.</p>
+          <p class="mb-4">Ми знаємо, що таке якість, розуміємо важливість дедлайнів і вміємо шити так, щоб ваші клієнти поверталися за новими колекціями.</p>
+          <p class="mb-4">Ми працюємо з середніми та легкими тканинами (трикотаж, шовк, льон та інші). Від створення лекал до готового виробу — контролюємо кожен етап, щоб забезпечити бездоганну якість.</p>
+          <p class="mb-4">Ми не просто шиємо — ми допомагаємо брендам розповісти свою історію через тканину, крій та якість.</p>
+          <p class="mb-4">Наше виробництво спеціалізується на оптовому пошитті для українського та європейського ринку, забезпечуючи якість, швидкість та гнучкість у виконанні замовлень.</p>
+          <p class="mb-4">Ми про якість, увагу до деталей та сучасні технології.</p>
+
+          <h3 class="font-bold mb-2.5">Про що ми?</h3>
+          <ul class="list-disc pl-[18px]">
+            <li class="mb-2.5">Про те, що кожен бренд заслуговує на якісний пошив.</li>
+            <li class="mb-2.5">Про те, що речі повинні виглядати ідеально не тільки на фото, а й у реальному житті.</li>
+            <li class="mb-2.5">Про те, що кожна річ повинна бути не просто красивою, а довговічною та комфортною.</li>
+            <li class="mb-2.5">Про те, що ідеальний крій — це не міф.</li>
+            <li class="mb-2.5">Про те, що дедлайни — це свято, а контроль якості — не пусті слова.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLACK BLOCK -->
+    <section class="blackcontent max-w-[1920px] bg-[#060606] pt-[15px] text-brandLight">
+      <div class="inter-blackcontent w-full h-full pt-[109px]" style="background:repeating-linear-gradient(to right,#D7D7D7 0 9px, transparent 9px 16px) top center/16px 1px repeat-x">
+        <div class="top-bl-content text-brandLight max-w-[1150px] pl-[110px] flex flex-row">
+          <h2 class="top-bl-title font-coolcrammed text-[130px] leading-[.9] tracking-[.04em] uppercase text-white/80 mb-10 whitespace-nowrap">Що ми пропонуємо?</h2>
+          <ul class="top-bl-list flex flex-col gap-5 text-[18px] leading-[1.395] font-evolventa font-normal tracking-[.063em] pl-[130px]">
+            <li class="before:content-['▸'] before:text-brandLight before:mr-2.5">Розробка лекал та градація (розширення) розмірів-щоб ваш виріб сидів як треба.</li>
+            <li class="before:content-['▸'] before:text-brandLight before:mr-2.5">Шиємо зразки (прототипи) для затвердження моделі.</li>
+            <li class="before:content-['▸'] before:text-brandLight before:mr-2.5">Виконуємо розкрій тканини.</li>
+            <li class="before:content-['▸'] before:text-brandLight before:mr-2.5">Оптовий пошив — без нервів і з чітким дотриманням ТЗ.</li>
+            <li class="before:content-['▸'] before:text-brandLight before:mr-2.5">Професійно шиємо вироби будь-якої складності.</li>
+            <li class="before:content-['▸'] before:text-brandLight before:mr-2.5">Контролюємо якість на всіх етапах виробництва.</li>
+          </ul>
+        </div>
+
+        <!-- WHY US -->
+        <section class="why-us relative bg-[#060606] text-brandLight max-w-[1920px] w-full min-h-[900px] overflow-hidden font-coolcrammed text-[130px] leading-[.9] tracking-[.04em]">
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-black/50 to-black pointer-events-none z-[1]"></div>
+
+          <div class="why-us-image absolute left-0 bottom-0 z-[1]">
+            <img src="./JPGPNG/maneken.png" alt="Манекен" class="h-full w-auto object-cover brightness-90 block" />
+          </div>
+
+          <div class="relative z-[3]">
+            <h2 class="why-us-title absolute top-[133px] left-[45%] -translate-x-1/2 max-w-[385px] text-left uppercase text-white/80">Чому обирають<br/>саме нас?</h2>
+
+          </div>
+
+          <div class="why-us-text absolute top-[140px] right-[100px] max-w-[691px] flex flex-col gap-[18px] font-evolventa text-[18px] leading-[1.395] tracking-[.063em] z-[2]">
+            <p>Ми знаємо, що таке якість, розуміємо важливість дедлайнів і вміємо шити так, щоб ваші клієнти поверталися за новими колекціями.</p>
+            <ul class="space-y-2">
+              <li class="before:content-['▸'] before:mr-2">Висока якість пошиття</li>
+              <li class="before:content-['▸'] before:mr-2">Гнучкі умови співпраці — працюємо як з малими так і з великими партіями</li>
+              <li class="before:content-['▸'] before:mr-2">Сучасне обладнання та досвідчена команда професіоналів</li>
+              <li class="before:content-['▸'] before:mr-2">Доставка по Україні, Європі</li>
+            </ul>
+            <p>Зв’яжіться з нами — і ми допоможемо створити ідеальний продукт для вашого бренду!</p>
+          </div>
+
+          <div class="why-us-button absolute right-[100px] top-[552px] z-[2]">
+            <img src="./JPGPNG/Call_button.svg" alt="Замовити дзвінок" class="w-[227px] h-auto cursor-pointer transition-transform hover:scale-110" />
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- WORKINFO (explicit white bg/text) -->
+    <section class="workinfo min-h-[1748px] mt-[172px] bg-white text-brandGray">
+      <div class="workinfo-title font-coolcrammed text-[130px] uppercase pt-10 pb-[30px] pl-[110px] leading-[1.2]">Умови співпраці</div>
+
+      <div class="workinfo-container mt-[120px] flex items-start gap-[100px] px-[110px]">
+        <div class="workinfo-image-wrapper relative w-[664px] h-[894px]">
+          <img src="./JPGPNG/workinfo_img.png" alt="workinfo_image" class="workinfo-img absolute top-[2px] left-0 w-full h-full z-[1]" />
+          <img src="./JPGPNG/workinfo_img.png" alt="workinfo_image" class="workinfo-img-large absolute inset-0 w-full h-full z-[2] origin-top-left scale-100 opacity-0 transition duration-1000 ease-in-out pointer-events-none" />
+        </div>
+
+        <!-- Tabs -->
+        <ul class="workinfo-tabs flex flex-col list-none mt-12 w-full max-w-[880px] cursor-pointer">
+          <!-- 1 -->
+          <li class="tab-item tab-item-1 flex items-center font-[500] font-archivo text-[40px] leading-[56px] uppercase text-brandGray">
+            <span class="arrow mr-[29px] flex items-center justify-center shrink-0">
+              <img src="./JPGPNG/work_logov.svg" alt="arrow icon" />
+            </span>
+            <span class="tab-text border-t-2 border-brandGray max-w-[690px] w-full pt-[35px] pb-[35px]">Оплата та умови співпраці</span>
+          </li>
+          <div class="tab-content ml-[107px]">
+            <p class="font-evolventa text-[16px] leading-6">Ми цінуємо наших партнерів і гарантуємо високу якість пошиття. Проте, якщо під час виробництва виникають непередбачені ситуації, ми пропонуємо прозорі умови співпраці:</p>
+            <div class="tab-first-container">
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Передоплата <strong class="font-bold">50%</strong> перед початком роботи, решта – після завершення пошиття.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Мінімальне замовлення обговорюється <strong class="font-bold">індивідуально</strong>.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Доставка по Україні, Європі <strong class="font-bold">(оплачується окремо)</strong>.</p>
+            </div>
+            <p>Ми відкриті до надійного та довгострокового партнерства! Для зручності та прозорості взаємодії ми можемо укласти <strong class="font-bold">офіційний договір</strong> між сторонами, що забезпечить:</p>
+            <div class="tab-first-container">
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"/> Чітке визначення умов замовлення(терміни, обсяги, матеріали).</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"/> Гарантії виконання зобов’язань.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"/> Юридичний захист обох сторін.</p>
+            </div>
+            <p>Зв’яжіться з нами, щоб отримати розрахунок вартості та обговорити деталі!</p>
+          </div>
+
+          <!-- 2 -->
+          <li class="tab-item tab-item-2 flex items-center font-[500] font-archivo text-[40px] leading-[56px] uppercase text-brandGray">
+            <span class="arrow mr-[29px] flex items-center justify-center shrink-0">
+              <img src="./JPGPNG/work_logov.svg" alt="arrow icon" />
+            </span>
+            <span class="tab-text border-t-2 border-brandGray max-w-[690px] w-full pt-[35px] pb-[35px]">Умови співпраці при виявленні браку тканини або пошитого одягу</span>
+          </li>
+          <div class="tab-content ml-[107px]">
+            <div class="tab-second-container">
+              <p>Ми ретельно перевіряємо матеріали перед виробництвом, але можливі випадки, коли дефект тканини виявляється вже на готовому виробі. У таких ситуаціях:</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> <strong class="font-bold">Ми не несемо</strong> відповідальності за приховані дефекти тканини, які не були помітні до пошиття.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Замовник оплачує вартість <strong class="font-bold">виконаної</strong> роботи, оскільки пошиття здійснене відповідно до узгоджених вимог.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> За бажанням замовника можливий повторний пошив за <strong class="font-bold">додаткову оплату</strong> або коригування виробу, якщо це можливо.</p>
+            </div>
+            <p>Щоб уникнути подібних ситуацій, ми рекомендуємо попередньо перевіряти тканину перед передачею в роботу.</p>
+          </div>
+
+          <!-- 3 -->
+          <li class="tab-item tab-item-3 flex items-center font-[500] font-archivo text-[40px] leading-[56px] uppercase text-brandGray">
+            <span class="arrow mr-[29px] flex items-center justify-center shrink-0">
+              <img src="./JPGPNG/work_logov.svg" alt="arrow icon" />
+            </span>
+            <span class="tab-text border-t-2 border-brandGray max-w-[690px] w-full pt-[35px] pb-[35px]">Брак тканини</span>
+          </li>
+          <div class="tab-content ml-[107px]">
+            <div class="tab-third-container">
+              <p>Перед початком роботи ми проводимо ретельний огляд тканини. <br>Якщо брак виявлено <strong class="font-bold">до розкрою</strong>, клієнт може замінити тканину або узгодити подальші дії.</p>
+              <p>Якщо тканина була надана замовником і має приховані дефекти, <strong class="font-bold">відповідальність за неї несе постачальник тканини</strong>.</p>
+              <p>Замовник може надати свою тканину або скористатися нашою допомогою в її підборі.</p>
+              <p>Ми <strong class="font-bold">не несемо</strong> відповідальності за дефекти тканини, наданої замовником, але перед початком роботи повідомляємо про виявлені недоліки.</p>
+              <p>Контроль якості здійснюється <strong class="font-bold">на всіх етапах</strong> пошиття. Якщо виробничий брак виник з нашої вини, ми <strong class="font-bold">гарантуємо переробку</strong> або <strong class="font-bold">компенсацію</strong>.</p>
+              <p>Якщо брак стався через неправильні технічні вимоги або невірно надані лекала, <strong class="font-bold">відповідальність несе замовник</strong>.</p>
+            </div>
+            <p>Ми працюємо прозоро та відкрито, гарантуючи <strong class="font-bold">контроль якості на кожному етапі виробництва!</strong></p>
+          </div>
+
+          <!-- 4 -->
+          <li class="tab-item tab-item-4 flex items-center font-[500] font-archivo text-[40px] leading-[56px] uppercase text-brandGray">
+            <span class="arrow mr-[29px] flex items-center justify-center shrink-0">
+              <img src="./JPGPNG/work_logov.svg" alt="arrow icon" />
+            </span>
+            <span class="tab-text border-t-2 border-brandGray max-w-[690px] w-full pt-[35px] pb-[35px]">Як уникнути браку тканини під час виробництва одягу</span>
+          </li>
+          <div class="tab-content ml-[107px]">
+            <p class="text-[16px] leading-6">Якість тканини — це основа успішного виробництва одягу. Щоб мінімізувати ризики та захистити себе від можливих дефектів, варто дотримуватись кількох правил:</p>
+            <div class="tab-fourth-container">
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Перевірка постачальника — обирайте надійних виробників тканин, запитуйте <strong class="font-bold">сертифікати якості</strong> та <strong class="font-bold">зразки</strong> перед замовленням.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Тестування перед пошиттям — перевіряйте тканину на <strong class="font-bold">усадку, стійкість кольору</strong> та <strong class="font-bold">еластичність</strong>.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Візуальний огляд — ретельно оглядайте рулони тканини на наявність <strong class="font-bold">плям</strong>, <strong class="font-bold">затяжок</strong>, <strong class="font-bold">розривів</strong> чи інших дефектів.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Правильне зберігання — дотримуйтеся <strong class="font-bold">оптимальних умов вологості</strong> та <strong class="font-bold">температури</strong>, щоб тканина не втрачала своїх властивостей.</p>
+              <p><img src="./JPGPNG/right_arrom.svg" alt="right_arrow" class="inline-block mr-2"> Умови повернення — <strong class="font-bold">заздалегідь</strong> узгоджуйте з постачальником можливість повернення або заміни тканини у разі виявлення браку.</p>
+            </div>
+            <p>Дотримуючись цих рекомендацій, ви зможете уникнути фінансових втрат та забезпечити високу якість готової продукції.</p>
+          </div>
+
+          <!-- 5 -->
+          <li class="tab-item tab-item-5 flex items-center font-[500] font-archivo text-[40px] leading-[56px] uppercase text-brandGray">
+            <span class="arrow mr-[29px] flex items-center justify-center shrink-0">
+              <img src="./JPGPNG/work_logov.svg" alt="arrow icon" />
+            </span>
+            <span class="tab-text border-t-2 border-brandGray max-w-[690px] w-full pt-[35px] pb-[35px]">Терміни виконання</span>
+          </li>
+          <div class="tab-content ml-[107px]">
+            <div class="tab-fifth-container">
+              <p>Виготовлення тестового зразка – <strong class="font-bold">5-10 робочих днів.</strong></p>
+              <p>Серійне виробництво <strong class="font-bold">10 – 30 робочих днів,</strong> залежно від складності та обсягу замовлення.</p>
+              <p>Мінімальне замовлення обговорюється <strong class="font-bold">індивідуально.</strong></p>
+              <p>Зворотній відлік розпочнеться тоді, коли <strong class="font-bold">всі матеріали і зразок</strong> будуть у нас <strong class="font-bold">на виробництві.</strong></p>
+              <p>Ми не чарівники, але дуже стараємось!</p>
+              <p>Термінові замовлення – <strong class="font-bold">за погодженням.</strong> Остаточні терміни узгоджуються індивідуально після затвердження всіх деталей.</p>
+            </div>
+          </div>
+
+          <li class="fake-li cursor-default">
+            <span class="tab-text-bottom border-t-2 border-brandGray max-w-[690px] w-full pt-[35px] pb-[35px] ml-[105px]"></span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+<!-- PRICE -->
+<section class="price-section relative text-brandGray" style="background-image:url('./JPGPNG/price_section1.png'); background-size:cover; background-position:center;">
+  <div class="max-w-[1920px] mx-auto px-[110px] pr-[111px] py-[212px]">
+    <div class="max-w-[1699px] w-full mx-auto flex">
+      <div class="w-[579px] relative">
+        <h2 class="absolute top-0 left-0 font-coolcrammed text-[130px] leading-[.9] tracking-[.04em] uppercase text-[#353131]">Ціни</h2>
+      </div>
+
+      <div class="w-[1120px]">
+        <div id="priceWrap" class="price-table-wrap w-[1120px]">
+          <table class="w-[1120px] table-fixed bg-white/60 backdrop-blur-md text-[#353131] font-archivo text-[18px] leading-[1.3] border border-brandGray/30 rounded">
+            <thead class="uppercase font-bold">
+              <tr class="text-center divide-x divide-brandGray/30">
+                <th class="px-3 py-4 text-left">Виріб</th>
+                <th class="px-3 py-4">Лекала</th>
+                <th class="px-3 py-4">Зразок</th>
+                <th class="px-3 py-4">Опт від 20 од.</th>
+                <th class="px-3 py-4">Опт від 200 од.</th>
+              </tr>
+            </thead>
+            <tbody class="[&>tr:nth-child(even)]:bg-white/40">
+              <!-- 1 -->
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">ФУТБОЛКА / ТОП</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1000 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 850 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 450 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 340 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">ХУДІ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1400 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1200 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 525 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 375 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">СВІТШОТ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1300 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 970 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 470 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 325 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">ШТАНИ ТРИКОТАЖ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1200 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 920 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 430 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 310 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">СПІДНИЦЯ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 900 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1750 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 640 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 420 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">ПІДЖАК</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 2500 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 3250 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1470 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1010 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">СУКНЯ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1500 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1850 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 750 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 520 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">СОРОЧКА ЖІНОЧА</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1600 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1750 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 680 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 420 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">БРЮКИ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1500 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1850 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 850 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 620 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">ТРЕНЧ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 2100 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 3100 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1200 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 850 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">ПАЛЬТО</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 2500 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 6500 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 2300 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1600 грн</td>
+              </tr>
+              <tr class="border-t border-brandGray/30">
+                <td class="px-3 py-5">БОДІ</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1300 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 1300 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 450 грн</td>
+                <td class="px-3 py-5 text-center border-l border-brandGray/30">від 320 грн</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button id="priceToggleBtn" class="price-more-btn w-[319px] h-[54px] mt-[53px] bg-white/60 text-[#353131] font-archivo text-[18px] tracking-[.23em] uppercase underline self-center inline-flex items-center justify-center transition-transform hover:-translate-y-px">ПОКАЗАТИ ВСІ ЦІНИ</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer-section bg-[#030409] bg-no-repeat bg-right min-h-[852px] pt-[49px] pl-[59px] flex flex-row" style="background-image:url('./JPGPNG/footer-img.png')">
+      <div class="left-footer-info max-w-[620px] w-full h-[632px]">
+        <div class="up-footer-text">
+          <h2 class="font-coolcrammed text-[130px] leading-[1] tracking-[.03em] text-white/80">Готові запустити круту колекцію?</h2>
+          <p class="font-evolventa text-[18px] leading-[1.2] text-white pt-8 font-light">Ми вже розігріли швейні машинки!</p>
+        </div>
+        <div class="down-footer-text pt-[126px]">
+          <div class="footer-first-info text-white font-evolventa text-[18px] leading-[1.395] tracking-[.035em]">
+            <p>Адреса: м.Дніпро,</p>
+            <p>вул.Святослава Хороброго ,22;офіс 202</p>
+            <p>+380 (93) 811 40 24</p>
+            <p>+380 (93) 795 38 53</p>
+          </div>
+          <div class="footer-second-info mt-[10px] text-white font-evolventa text-[18px] leading-[1.395] tracking-[.035em]">
+            <p>Пн-Пт: 09:00 - 18:00</p>
+            <p>Сб-Нд: вихідний</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="center-footer-info flex-1">
+        <div class="footer-button pl-[117px] pt-[83px]">
+          <img src="./JPGPNG/footer-button.svg" alt="Заповнити форму" class="max-w-[227px] h-auto cursor-pointer transition-transform hover:scale-110" />
+        </div>
+        <div class="footer-links pt-[357px] pl-[47px] flex flex-col">
+          <nav class="footer-anchor flex gap-[30px] items-center">
+            <a href="#" class="font-evolventa text-[14px] leading-[.82] text-brandLight no-underline">хто ми</a>
+            <a href="#" class="font-evolventa text-[14px] leading-[.82] text-brandLight no-underline">послуги</a>
+            <a href="#" class="font-evolventa text-[14px] leading-[.82] text-brandLight no-underline">ціни</a>
+            <a href="#" class="font-evolventa text-[14px] leading-[.82] text-brandLight no-underline">умови</a>
+            <a href="#" class="font-evolventa text-[14px] leading-[.82] text-brandLight no-underline">контакти</a>
+          </nav>
+          <a class="instagram-link font-evolventa text-[18px] leading-[1.395] text-white self-center pt-[21px]" href="https://www.instagram.com/clothing_industry_dp/?igsh=MXJudnh3djduYnIybw%3D%3D&utm_source=qr#">Instagram</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Keep your existing JS -->
+  <script src="./js/index.js"></script>
+</body>
+</html>
